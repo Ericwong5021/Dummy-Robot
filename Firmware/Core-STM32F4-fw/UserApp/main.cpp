@@ -15,7 +15,7 @@ DummyRobot dummy(&hcan1);
 
 /* Thread Definitions -----------------------------------------------------*/
 osThreadId_t controlLoopFixUpdateHandle;
-void ThreadControlLoopFixUpdate(void* argument)
+void ThreadControlLoopFixUpdate(void* argument) // 位置反馈补偿?
 {
     for (;;)
     {

@@ -82,6 +82,7 @@ typedef struct
 } endpoint_ref_t;
 
 #include <cstring>
+#include <cstdio>
 
 template<typename T, typename = typename std::enable_if_t<!std::is_const<T>::value>>
 inline size_t write_le(T value, uint8_t *buffer)

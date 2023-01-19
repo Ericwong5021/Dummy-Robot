@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <fibre/protocol.hpp>
 #include <fibre/crc.hpp>
