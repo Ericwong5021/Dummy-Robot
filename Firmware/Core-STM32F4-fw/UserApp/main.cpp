@@ -6,7 +6,7 @@ SSD1306 oled(&hi2c0);
 // On-board Sensor, used hi2c1
 MPU6050 mpu6050(&hi2c1);
 // 5 User-Timers, can choose from htim7/htim10/htim11/htim13/htim14
-Timer timerCtrlLoop(&htim7, 200);
+Timer timerCtrlLoop(&htim7, 200); // 定时器对象的构造函数
 // 2x2-channel PWMs, used htim9 & htim12, each has 2-channel outputs
 PWM pwm(21000, 21000);
 // Robot instance
@@ -20,7 +20,7 @@ void ThreadControlLoopFixUpdate(void* argument) // 位置反馈补偿?
     for (;;)
     {
         // Suspended here until got Notification.
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);    // 这里用了5ms的定时器中断触发任务通知
 
         if (dummy.IsEnabled())
         {
@@ -49,7 +49,7 @@ void ThreadControlLoopFixUpdate(void* argument) // 位置反馈补偿?
 
 
 osThreadId_t ControlLoopUpdateHandle;
-void ThreadControlLoopUpdate(void* argument)
+void ThreadControlLoopUpdate(void* argument) // 指令解析电机控制
 {
     for (;;)
     {

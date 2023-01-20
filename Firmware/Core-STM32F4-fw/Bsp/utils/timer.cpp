@@ -4,7 +4,7 @@ static TimerCallback_t timerCallbacks[5];
 
 Timer::Timer(TIM_HandleTypeDef *_htim, uint32_t _freqHz)
 {
-    htim7.Instance = TIM7;
+    htim7.Instance = TIM7;  // 配置几个应用层可用定时器结构体变量的基地址
     htim10.Instance = TIM10;
     htim11.Instance = TIM11;
     htim13.Instance = TIM13;
@@ -16,23 +16,23 @@ Timer::Timer(TIM_HandleTypeDef *_htim, uint32_t _freqHz)
           _htim->Instance == TIM13 ||
           _htim->Instance == TIM14))
     {
-        Error_Handler();
+        Error_Handler(); // 不是可用的定时器通道
     }
 
     if (_freqHz < 1) _freqHz = 1;
     else if (_freqHz > 10000000) _freqHz = 10000000;
 
-    htim = _htim;
-    freq = _freqHz;
+    htim = _htim;   // 这里是 htim7
+    freq = _freqHz; // 这里是 200Hz
 
-    CalcRegister(freq);
+    CalcRegister(freq); // 计算定时器的周期(ARR)和预分频值(PSC)
 
     HAL_TIM_Base_DeInit(_htim);
     _htim->Init.Prescaler = PSC - 1;
     _htim->Init.CounterMode = TIM_COUNTERMODE_UP;
     _htim->Init.Period = ARR - 1;
     _htim->Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-    _htim->Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+    _htim->Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE; // 配置好了 TIM7 的中断触发频率为200Hz(周期5ms)
     if (HAL_TIM_Base_Init(_htim) != HAL_OK)
     {
         Error_Handler();
