@@ -95,7 +95,7 @@ void CtrlStepMotor::SetPositionSetPoint(float _val)
 void CtrlStepMotor::SetPositionWithVelocityLimit(float _pos, float _vel)
 {
     uint8_t mode = 0x07;
-    txHeader.StdId = nodeID << 7 | mode;
+    txHeader.StdId = nodeID << 7 | mode; // 根据电机对象的nodeID转为标准帧ID
 
     // Float to Bytes
     auto* b = (unsigned char*) &_pos;
@@ -105,7 +105,7 @@ void CtrlStepMotor::SetPositionWithVelocityLimit(float _pos, float _vel)
     for (int i = 4; i < 8; i++)
         canBuf[i] = *(b + i - 4);
 
-    CanSendMessage(get_can_ctx(hcan), canBuf, &txHeader);
+    CanSendMessage(get_can_ctx(hcan), canBuf, &txHeader); // 发送CAN帧(这里没用CANOpen, 直接调用HAL库)
 }
 
 
@@ -237,9 +237,9 @@ void CtrlStepMotor::SetAngle(float _angle)
 
 void CtrlStepMotor::SetAngleWithVelocityLimit(float _angle, float _vel)
 {
-    _angle = inverseDirection ? -_angle : _angle;
-    float stepMotorCnt = _angle / 360.0f * (float) reduction;
-    SetPositionWithVelocityLimit(stepMotorCnt, _vel);
+    _angle = inverseDirection ? -_angle : _angle; // 关节旋转方向
+    float stepMotorCnt = _angle / 360.0f * (float) reduction; // 计算对应步进电机步数
+    SetPositionWithVelocityLimit(stepMotorCnt, _vel); // 用CAN发出步数和最大速度
 }
 
 

@@ -25,7 +25,7 @@ public:
     float angleLimitMax;
     float angleLimitMin;
     bool inverseDirection;
-    uint8_t reduction;
+    uint8_t reduction; // 齿轮比
     State state = STOP;
 
     void SetAngle(float _angle);

@@ -60,21 +60,21 @@ void DummyRobot::Reboot()
 
 void DummyRobot::MoveJoints(DOF6Kinematic::Joint6D_t _joints)
 {
-    for (int j = 1; j <= 6; j++)
+    for (int j = 1; j <= 6; j++) // 分别给每个关节发出运动指令, 这里的motorJ[j]指定了电机的从站号
     {
         motorJ[j]->SetAngleWithVelocityLimit(_joints.a[j - 1] - initPose.a[j - 1],
                                              dynamicJointSpeeds.a[j - 1]);
     }
 }
 
-
+// 主要功能: 判断参数是否有效, 并计算各个轴的角度增量和角速度
 bool DummyRobot::MoveJ(float _j1, float _j2, float _j3, float _j4, float _j5, float _j6)
 {
     DOF6Kinematic::Joint6D_t targetJointsTmp(_j1, _j2, _j3, _j4, _j5, _j6);
     bool valid = true;
 
     for (int j = 1; j <= 6; j++)
-    {
+    { // 判断给定角度是否超限
         if (targetJointsTmp.a[j - 1] > motorJ[j]->angleLimitMax ||
             targetJointsTmp.a[j - 1] < motorJ[j]->angleLimitMin)
             valid = false;
@@ -82,18 +82,18 @@ bool DummyRobot::MoveJ(float _j1, float _j2, float _j3, float _j4, float _j5, fl
 
     if (valid)
     {
-        DOF6Kinematic::Joint6D_t deltaJoints = targetJointsTmp - currentJoints;
+        DOF6Kinematic::Joint6D_t deltaJoints = targetJointsTmp - currentJoints; // 求出当前角度和给定角度之差
         uint8_t index;
-        float maxAngle = AbsMaxOf6(deltaJoints, index);
-        float time = maxAngle * (float) (motorJ[index + 1]->reduction) / jointSpeed;
-        for (int j = 1; j <= 6; j++)
+        float maxAngle = AbsMaxOf6(deltaJoints, index); // 求出6个轴中的最大偏差角度
+        float time = maxAngle * (float) (motorJ[index + 1]->reduction) / jointSpeed; // 计算这个动作的执行时间(角度/速度)
+        for (int j = 1; j <= 6; j++)    // 计算各轴的(动力学)转速, (这是个私有结构体变量)
         {
             dynamicJointSpeeds.a[j - 1] =
                 abs(deltaJoints.a[j - 1] * (float) (motorJ[j]->reduction) / time * 0.1f); //0~10r/s
         }
 
         jointsStateFlag = 0;
-        targetJoints = targetJointsTmp;
+        targetJoints = targetJointsTmp; // 将计算结果传递给目标关节
 
         return true;
     }
@@ -431,7 +431,7 @@ uint32_t DummyRobot::CommandHandler::ParseCommand(const std::string &_cmd)
                                    joints[3], joints[4], joints[5]);
                 }
                 // Trigger a transmission immediately, in case IsMoving() returns false
-                context->MoveJoints(context->targetJoints);
+                context->MoveJoints(context->targetJoints); // 关节移动指令
 
                 while (context->IsMoving() && context->IsEnabled())
                     osDelay(5);
