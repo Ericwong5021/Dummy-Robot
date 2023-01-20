@@ -409,22 +409,22 @@ uint32_t DummyRobot::CommandHandler::ParseCommand(const std::string &_cmd)
 {
     uint8_t argNum;
 
-    switch (context->commandMode)
+    switch (context->commandMode) // 当前机械臂指令模式
     {
         case COMMAND_TARGET_POINT_SEQUENTIAL:
-        case COMMAND_CONTINUES_TRAJECTORY:
-            if (_cmd[0] == '>')
+        case COMMAND_CONTINUES_TRAJECTORY:      //指令连续执行模式
+            if (_cmd[0] == '>') // 根据关节角度给定控制
             {
                 float joints[6];
                 float speed;
 
                 argNum = sscanf(_cmd.c_str(), ">%f,%f,%f,%f,%f,%f,%f", joints, joints + 1, joints + 2,
                                 joints + 3, joints + 4, joints + 5, &speed);
-                if (argNum == 6)
+                if (argNum == 6)    // 控制各关节角度
                 {
                     context->MoveJ(joints[0], joints[1], joints[2],
                                    joints[3], joints[4], joints[5]);
-                } else if (argNum == 7)
+                } else if (argNum == 7) // 设置关节速度, 并控制各关节角度
                 {
                     context->SetJointSpeed(speed);
                     context->MoveJ(joints[0], joints[1], joints[2],
@@ -437,17 +437,17 @@ uint32_t DummyRobot::CommandHandler::ParseCommand(const std::string &_cmd)
                     osDelay(5);
                 Respond(*usbStreamOutputPtr, "ok");
                 Respond(*uart4StreamOutputPtr, "ok");
-            } else if (_cmd[0] == '@')
+            } else if (_cmd[0] == '@') // 根据末端位姿给定控制
             {
                 float pose[6];
                 float speed;
 
                 argNum = sscanf(_cmd.c_str(), "@%f,%f,%f,%f,%f,%f,%f", pose, pose + 1, pose + 2,
                                 pose + 3, pose + 4, pose + 5, &speed);
-                if (argNum == 6)
+                if (argNum == 6) // 给定末端位姿
                 {
                     context->MoveL(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);
-                } else if (argNum == 7)
+                } else if (argNum == 7) // 设置关节速度, 并给定末端姿态
                 {
                     context->SetJointSpeed(speed);
                     context->MoveL(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);

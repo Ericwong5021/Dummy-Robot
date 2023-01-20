@@ -53,7 +53,7 @@ void ThreadControlLoopUpdate(void* argument)
 {
     for (;;)
     {
-        dummy.commandHandler.ParseCommand(dummy.commandHandler.Pop(osWaitForever));
+        dummy.commandHandler.ParseCommand(dummy.commandHandler.Pop(osWaitForever)); // 从队列中获取指令
     }
 }
 
@@ -150,7 +150,7 @@ void Main(void)
     pwm.Start();
 
     // Init & Run User Threads.
-    const osThreadAttr_t controlLoopTask_attributes = {
+    const osThreadAttr_t controlLoopTask_attributes = { // 控制补偿线程
         .name = "ControlLoopFixUpdateTask",
         .stack_size = 2000,
         .priority = (osPriority_t) osPriorityRealtime,
@@ -158,7 +158,7 @@ void Main(void)
     controlLoopFixUpdateHandle = osThreadNew(ThreadControlLoopFixUpdate, nullptr,
                                              &controlLoopTask_attributes);
 
-    const osThreadAttr_t ControlLoopUpdateTask_attributes = {
+    const osThreadAttr_t ControlLoopUpdateTask_attributes = { // 控制执行线程
         .name = "ControlLoopUpdateTask",
         .stack_size = 2000,
         .priority = (osPriority_t) osPriorityNormal,
@@ -166,7 +166,7 @@ void Main(void)
     ControlLoopUpdateHandle = osThreadNew(ThreadControlLoopUpdate, nullptr,
                                           &ControlLoopUpdateTask_attributes);
 
-    const osThreadAttr_t oledTask_attributes = {
+    const osThreadAttr_t oledTask_attributes = { // 屏幕线程
         .name = "OledTask",
         .stack_size = 2000,
         .priority = (osPriority_t) osPriorityNormal,   // should >= Normal

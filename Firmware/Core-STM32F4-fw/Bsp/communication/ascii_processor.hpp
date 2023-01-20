@@ -24,7 +24,7 @@ void OnUart5AsciiCmd(const char* _cmd, size_t _len, StreamSink& _responseChannel
 // Function to send messages back through specific channel (UART or USB-VCP).
 // Use this function instead of printf because printf will send messages over ALL CHANNEL.
 template<typename ... TArgs>
-void Respond(StreamSink &output , const char *fmt, TArgs &&... args)
+void Respond(StreamSink &output , const char *fmt, TArgs &&... args)    // 应答数据流输出函数
 {
     char response[64];
     size_t len = snprintf(response, sizeof(response), fmt, std::forward<TArgs>(args)...);
