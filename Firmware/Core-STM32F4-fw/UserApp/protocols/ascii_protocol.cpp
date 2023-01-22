@@ -2,7 +2,7 @@
 
 extern DummyRobot dummy;
 
-
+// USB指令处理
 void OnUsbAsciiCmd(const char* _cmd, size_t _len, StreamSink &_responseChannel)
 {
     /*---------------------------- ↓ Add Your CMDs Here ↓ -----------------------------*/
@@ -48,14 +48,14 @@ void OnUsbAsciiCmd(const char* _cmd, size_t _len, StreamSink &_responseChannel)
             Respond(_responseChannel, "ok");
     } else if (_cmd[0] == '>' || _cmd[0] == '@')
     {
-        uint32_t freeSize = dummy.commandHandler.Push(_cmd);
+        uint32_t freeSize = dummy.commandHandler.Push(_cmd); // USB指令加入队列
         Respond(_responseChannel, "%d", freeSize);
     }
 
 /*---------------------------- ↑ Add Your CMDs Here ↑ -----------------------------*/
 }
 
-
+// 串口指令处理
 void OnUart4AsciiCmd(const char* _cmd, size_t _len, StreamSink &_responseChannel)
 {
     /*---------------------------- ↓ Add Your CMDs Here ↓ -----------------------------*/
@@ -101,7 +101,7 @@ void OnUart4AsciiCmd(const char* _cmd, size_t _len, StreamSink &_responseChannel
             Respond(_responseChannel, "ok");
     } else if (_cmd[0] == '>' || _cmd[0] == '@')
     {
-        uint32_t freeSize = dummy.commandHandler.Push(_cmd);
+        uint32_t freeSize = dummy.commandHandler.Push(_cmd); // Uart指令加入队列
         Respond(_responseChannel, "%d", freeSize);
     }
 /*---------------------------- ↑ Add Your CMDs Here ↑ -----------------------------*/

@@ -15,14 +15,14 @@ DummyRobot dummy(&hcan1);
 
 /* Thread Definitions -----------------------------------------------------*/
 osThreadId_t controlLoopFixUpdateHandle;
-void ThreadControlLoopFixUpdate(void* argument) // 位置反馈补偿?
+void ThreadControlLoopFixUpdate(void* argument) // 处理运动指令电机控制
 {
     for (;;)
     {
         // Suspended here until got Notification.
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);    // 这里用了5ms的定时器中断触发任务通知
 
-        if (dummy.IsEnabled())
+        if (dummy.IsEnabled()) // 判断机械臂是否使能
         {
             // Send control command to Motors & update Joint states
             switch (dummy.commandMode)
@@ -30,19 +30,19 @@ void ThreadControlLoopFixUpdate(void* argument) // 位置反馈补偿?
                 case DummyRobot::COMMAND_TARGET_POINT_SEQUENTIAL:
                 case DummyRobot::COMMAND_TARGET_POINT_INTERRUPTABLE:
                 case DummyRobot::COMMAND_CONTINUES_TRAJECTORY:
-                    dummy.MoveJoints(dummy.targetJoints);
-                    dummy.UpdateJointPose6D();
+                    dummy.MoveJoints(dummy.targetJoints); // 发送电机控制指令
+                    dummy.UpdateJointPose6D(); // 更新机械臂位姿
                     break;
                 case DummyRobot::COMMAND_MOTOR_TUNING:
                     dummy.tuningHelper.Tick(10);
-                    dummy.UpdateJointPose6D();
+                    dummy.UpdateJointPose6D(); // 更新机械臂位姿
                     break;
             }
         } else
         {
             // Just update Joint states
-            dummy.UpdateJointAngles();
-            dummy.UpdateJointPose6D();
+            dummy.UpdateJointAngles(); // 更新各关节角度
+            dummy.UpdateJointPose6D(); // 更新末端位置和姿态
         }
     }
 }
@@ -118,11 +118,11 @@ void ThreadOledUpdate(void* argument)
 
 
 /* Timer Callbacks -------------------------------------------------------*/
-void OnTimer7Callback()
+void OnTimer7Callback() // 定时器回调函数
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-    // Wake & invoke thread IMMEDIATELY.
+    // Wake & invoke thread IMMEDIATELY. 中断发送TaskNotify
     vTaskNotifyGiveFromISR(TaskHandle_t(controlLoopFixUpdateHandle), &xHigherPriorityTaskWoken);
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }

@@ -172,25 +172,25 @@ public:
     class CommandHandler
     {
     public:
-        explicit CommandHandler(DummyRobot* _context) : context(_context)
+        explicit CommandHandler(DummyRobot* _context) : context(_context) // 构造函数
         {
-            commandFifo = osMessageQueueNew(16, 64, nullptr);
+            commandFifo = osMessageQueueNew(16, 64, nullptr); // 创建Command队列
         }
 
-        uint32_t Push(const std::string &_cmd);
-        std::string Pop(uint32_t timeout);
-        uint32_t ParseCommand(const std::string &_cmd);
-        uint32_t GetSpace();
-        void ClearFifo();
-        void EmergencyStop();
+        uint32_t Push(const std::string &_cmd); // 指令入队
+        std::string Pop(uint32_t timeout); // 指令出队
+        uint32_t ParseCommand(const std::string &_cmd); // 指令解析
+        uint32_t GetSpace(); // 获取队列剩余空间
+        void ClearFifo(); // 清空队列
+        void EmergencyStop(); // 紧急停止并清空队列
 
 
     private:
-        DummyRobot* context;
-        osMessageQueueId_t commandFifo;
-        char strBuffer[64]{};
+        DummyRobot* context; // 指令对象中的语境
+        osMessageQueueId_t commandFifo; // 指令队列FIFO句柄
+        char strBuffer[64]{}; // 指令内容缓存Buff
     };
-    CommandHandler commandHandler = CommandHandler(this);
+    CommandHandler commandHandler = CommandHandler(this); // 为DummyRobot创建消息队列
 
 
 private:

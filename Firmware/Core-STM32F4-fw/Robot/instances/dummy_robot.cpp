@@ -371,7 +371,7 @@ void DummyHand::SetEnable(bool _enable)
 }
 
 
-uint32_t DummyRobot::CommandHandler::Push(const std::string &_cmd)
+uint32_t DummyRobot::CommandHandler::Push(const std::string &_cmd) // 指令加入队列
 {
     osStatus_t status = osMessageQueuePut(commandFifo, _cmd.c_str(), 0U, 0U);
     if (status == osOK)
@@ -386,8 +386,8 @@ void DummyRobot::CommandHandler::EmergencyStop()
     context->MoveJ(context->currentJoints.a[0], context->currentJoints.a[1], context->currentJoints.a[2],
                    context->currentJoints.a[3], context->currentJoints.a[4], context->currentJoints.a[5]);
     context->MoveJoints(context->targetJoints);
-    context->isEnabled = false;
-    ClearFifo();
+    context->isEnabled = false; // 关闭使能状态
+    ClearFifo(); // 清除指令FIFO
 }
 
 
@@ -399,7 +399,7 @@ std::string DummyRobot::CommandHandler::Pop(uint32_t timeout)
 }
 
 
-uint32_t DummyRobot::CommandHandler::GetSpace()
+uint32_t DummyRobot::CommandHandler::GetSpace() // 获取队列剩余空间
 {
     return osMessageQueueGetSpace(commandFifo);
 }
@@ -513,7 +513,7 @@ uint32_t DummyRobot::CommandHandler::ParseCommand(const std::string &_cmd)
 
 void DummyRobot::CommandHandler::ClearFifo()
 {
-    osMessageQueueReset(commandFifo);
+    osMessageQueueReset(commandFifo); // 指令消息队列复位
 }
 
 
