@@ -54,7 +54,7 @@ private:
 };
 
 
-class DummyRobot
+class DummyRobot // 包含机械臂的相关信息和功能
 {
 public:
     explicit DummyRobot(CAN_HandleTypeDef* _hcan);
@@ -63,10 +63,10 @@ public:
 
     enum CommandMode
     {
-        COMMAND_TARGET_POINT_SEQUENTIAL = 1,
-        COMMAND_TARGET_POINT_INTERRUPTABLE,
-        COMMAND_CONTINUES_TRAJECTORY,
-        COMMAND_MOTOR_TUNING
+        COMMAND_TARGET_POINT_SEQUENTIAL = 1,    // 顺序指令模式
+        COMMAND_TARGET_POINT_INTERRUPTABLE,     // 中断指令模式
+        COMMAND_CONTINUES_TRAJECTORY,           // 连续轨迹模式
+        COMMAND_MOTOR_TUNING                    // 电机旋转指令
     };
 
 
@@ -77,9 +77,9 @@ public:
         {
         }
 
-        void SetTuningFlag(uint8_t _flag);
+        void SetTuningFlag(uint8_t _flag); // 设置旋转标志
         void Tick(uint32_t _timeMillis);
-        void SetFreqAndAmp(float _freq, float _amp);
+        void SetFreqAndAmp(float _freq, float _amp); // 设置频率和增益
 
 
         // Communication protocol definitions
@@ -172,11 +172,12 @@ public:
     class CommandHandler
     {
     public:
-        explicit CommandHandler(DummyRobot* _context) : context(_context) // 构造函数
+        explicit CommandHandler(DummyRobot* _context) : context(_context) // 指令构造函数, 并用传入参数给context赋值
         {
             commandFifo = osMessageQueueNew(16, 64, nullptr); // 创建Command队列
         }
 
+        // command队列操作接口
         uint32_t Push(const std::string &_cmd); // 指令入队
         std::string Pop(uint32_t timeout); // 指令出队
         uint32_t ParseCommand(const std::string &_cmd); // 指令解析
@@ -184,16 +185,18 @@ public:
         void ClearFifo(); // 清空队列
         void EmergencyStop(); // 紧急停止并清空队列
 
-
     private:
-        DummyRobot* context; // 指令对象中的语境
+        // command队列资源
+        DummyRobot* context; // context指针表明了Command队列指向的DummyRobot对象
         osMessageQueueId_t commandFifo; // 指令队列FIFO句柄
         char strBuffer[64]{}; // 指令内容缓存Buff
     };
-    CommandHandler commandHandler = CommandHandler(this); // 为DummyRobot创建消息队列
-
+    // 声明一个CommandHandler对象, 令其中的context指针指向当前DummyRobot, 这个过程发生在这个DummyRobot对象被创建时
+    // 目的是为机械臂创建一个指令队列, 指令生产者无需关注指令传输的细节, 只需要调用Push指令就可以完成指令发送工作
+    CommandHandler commandHandler = CommandHandler(this);
 
 private:
+    // DummyRobot
     CAN_HandleTypeDef* hcan;
     float jointSpeed = DEFAULT_JOINT_SPEED;
     float jointSpeedRatio = 1;

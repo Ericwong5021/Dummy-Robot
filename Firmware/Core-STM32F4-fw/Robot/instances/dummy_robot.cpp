@@ -101,11 +101,11 @@ bool DummyRobot::MoveJ(float _j1, float _j2, float _j3, float _j4, float _j5, fl
     return false;
 }
 
-
+// 以给定的姿态控制函数
 bool DummyRobot::MoveL(float _x, float _y, float _z, float _a, float _b, float _c)
 {
-    DOF6Kinematic::Pose6D_t pose6D(_x, _y, _z, _a, _b, _c);
-    DOF6Kinematic::IKSolves_t ikSolves{};
+    DOF6Kinematic::Pose6D_t pose6D(_x, _y, _z, _a, _b, _c); // 输入的目标位姿
+    DOF6Kinematic::IKSolves_t ikSolves{}; // 输出的逆解结果
     DOF6Kinematic::Joint6D_t lastJoint6D{};
 
     dof6Solver->SolveIK(pose6D, lastJoint6D, ikSolves);
@@ -517,7 +517,7 @@ void DummyRobot::CommandHandler::ClearFifo()
 }
 
 
-void DummyRobot::TuningHelper::SetTuningFlag(uint8_t _flag)
+void DummyRobot::TuningHelper::SetTuningFlag(uint8_t _flag) // 设置旋转标志
 {
     tuningFlag = _flag;
 }
@@ -534,7 +534,7 @@ void DummyRobot::TuningHelper::Tick(uint32_t _timeMillis)
 }
 
 
-void DummyRobot::TuningHelper::SetFreqAndAmp(float _freq, float _amp)
+void DummyRobot::TuningHelper::SetFreqAndAmp(float _freq, float _amp) // 设置频率和增益
 {
     if (_freq > 5)_freq = 5;
     else if (_freq < 0.1) _freq = 0.1;

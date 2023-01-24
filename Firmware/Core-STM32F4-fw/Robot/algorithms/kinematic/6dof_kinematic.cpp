@@ -10,6 +10,7 @@ inline float sinf(float x)
     return arm_sin_f32(x);
 }
 
+// 矩阵乘法函数
 static void MatMultiply(const float* _matrix1, const float* _matrix2, float* _matrixOut,
                         const int _m, const int _l, const int _n)
 {
@@ -29,6 +30,7 @@ static void MatMultiply(const float* _matrix1, const float* _matrix2, float* _ma
     }
 }
 
+// 旋转矩阵 转 欧拉角
 static void RotMatToEulerAngle(const float* _rotationM, float* _eulerAngles)
 {
     float A, B, C, cb;
@@ -59,6 +61,7 @@ static void RotMatToEulerAngle(const float* _rotationM, float* _eulerAngles)
     _eulerAngles[2] = A;
 }
 
+// 欧拉角 转 旋转矩阵
 static void EulerAngleToRotMat(const float* _eulerAngles, float* _rotationM)
 {
     float ca, cb, cc, sa, sb, sc;
@@ -111,8 +114,8 @@ DOF6Kinematic::DOF6Kinematic(float L_BS, float D_BS, float L_AM, float L_FA, flo
     atan_e = 0;
 }
 
-bool
-DOF6Kinematic::SolveFK(const DOF6Kinematic::Joint6D_t &_inputJoint6D, DOF6Kinematic::Pose6D_t &_outputPose6D)
+// 正向运动学函数
+bool DOF6Kinematic::SolveFK(const DOF6Kinematic::Joint6D_t &_inputJoint6D, DOF6Kinematic::Pose6D_t &_outputPose6D)
 {
     float q_in[6];
     float q[6];
@@ -179,6 +182,7 @@ DOF6Kinematic::SolveFK(const DOF6Kinematic::Joint6D_t &_inputJoint6D, DOF6Kinema
     return true;
 }
 
+// 运动学逆解
 bool DOF6Kinematic::SolveIK(const DOF6Kinematic::Pose6D_t &_inputPose6D, const Joint6D_t &_lastJoint6D,
                             DOF6Kinematic::IKSolves_t &_outputSolves)
 {
